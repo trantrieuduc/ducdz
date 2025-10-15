@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DucCar - Về chúng tôi</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+  <!-- AOS -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+
+  <!-- CSS riêng -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
+        <img src="img/logo.png" alt="Logo" height="40" class="me-2">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <li class="nav-item"><a class="nav-link" href="index.html">Trang chủ</a></li>
+          <li class="nav-item"><a class="nav-link" href="sanpham.html">Sản phẩm</a></li>
+          <li class="nav-item"><a class="nav-link" href="about.html">Về chúng tôi</a></li>
+          <li class="nav-item"><a class="nav-link active" href="lienhe.html">Liên hệ</a></li>
+        </ul>
+        <form class="d-flex ms-lg-3 my-2 my-lg-0" onsubmit="searchProducts();return false;">
+          <input id="searchInput" class="form-control me-2" type="search" placeholder="Tìm xe...">
+          <button class="btn btn-outline-light" type="submit"><i class="fas fa-search"></i></button>
+        </form>
+        <button class="btn btn-outline-light ms-lg-3 my-2 my-lg-0 position-relative" onclick="openCart()">
+          <i class="fas fa-shopping-cart"></i>
+          <span id="cart-count"
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"></span>
+        </button>
+        <div id="auth-area" class="d-flex align-items-center ms-3">
+          <button id="btn-login" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#authModal">
+            <i class="fas fa-user"></i> Đăng nhập
+          </button>
+          <div id="userMenu" class="dropdown d-none">
+            <a class="btn btn-outline-light dropdown-toggle" href="#" id="userMenuBtn" data-bs-toggle="dropdown">
+              <i class="fas fa-user-circle"></i> <span id="userNameDisplay"></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuBtn">
+              <li><a class="dropdown-item" href="#" id="accountProfile">Tài khoản</a></li>
+              <li><a class="dropdown-item d-flex justify-content-between align-items-center" href="#"
+                  id="orderHistoryBtn" onclick="renderOrderHistory()">Lịch sử đơn hàng <span id="order-count"
+                    class="badge bg-secondary">0</span></a></li>
+              <li id="adminMenu" class="d-none"><a class="dropdown-item" href="#" id="openAdmin">Tính năng admin</a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item text-danger" href="#" id="btn-logout">Đăng xuất</a></li>
+            </ul>
+          </div>
+        </div>
+        <button class="btn btn-outline-light ms-3 my-2 my-lg-0" id="dark-toggle">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========== HERO SECTION - LIÊN HỆ ========== -->
+  <section class="hero position-relative">
+    <video autoplay muted loop playsinline class="hero-video w-100">
+      <source src="img/lienhe.mp4" type="video/mp4" />
+      Trình duyệt của bạn không hỗ trợ video.
+    </video>
+
+    <div class="overlay"></div>
+
+    <div class="container text-center hero-title position-absolute top-50 start-50 translate-middle">
+      <h1 class="fw-bold text-white display-4 mb-3">Liên hệ với DucCar</h1>
+      <p class="text-light lead">Chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7 – hãy để lại thông tin, DucCar sẽ liên hệ sớm
+        nhất.</p>
+    </div>
+  </section>
+
+  <!-- ========== FORM LIÊN HỆ ========== -->
+  <main class="container py-5">
+    <h2 class="page-title text-center mb-4">Liên hệ với chúng tôi</h2>
+    <form id="contactForm" class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Họ và tên</label>
+        <input type="text" id="name" class="form-control" required />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Email</label>
+        <input type="email" id="email" class="form-control" required />
+      </div>
+      <div class="col-12">
+        <label class="form-label">Số điện thoại</label>
+        <input type="tel" id="phone" class="form-control" required />
+      </div>
+      <div class="col-12">
+        <label class="form-label">Nội dung</label>
+        <textarea id="message" class="form-control" rows="4" required></textarea>
+      </div>
+      <div class="col-12 text-center">
+        <button type="submit" class="btn btn-primary" onclick="validateForm(event)">📨 Gửi liên hệ</button>
+      </div>
+    </form>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="mt-5">
+    <div class="container d-flex flex-wrap justify-content-between">
+      <div class="mb-3"><img src="img/logo.png" alt="Logo" height="50"></div>
+      <div>
+        <h5>Khám phá</h5>
+        <ul class="list-unstyled">
+          <li><a href="#">Trang chủ</a></li>
+          <li><a href="#">Sản phẩm</a></li>
+          <li><a href="#">Về chúng tôi</a></li>
+          <li><a href="#">Liên hệ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Liên hệ</h5>
+        <ul class="list-unstyled">
+          <li><i class="fas fa-map-marker-alt me-1"></i>123 Nguyễn Huệ, TP.HCM</li>
+          <li><i class="fas fa-phone-alt me-1"></i>+84 987 654 321</li>
+          <li><i class="fas fa-envelope me-1"></i>info@example.com</li>
+        </ul>
+      </div>
+      <div>
+        <h5>Kết nối</h5>
+        <div class="footer-social">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-youtube"></i></a>
+          <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+    </div>
+    <hr class="mt-3 mb-2">
+    <div class="text-center">&copy; 2025 DucCar. Bản quyền thuộc về DucCar.</div>
+  </footer>
+
+
+  <!-- MODAL AUTH -->
+  <div class="modal fade" id="authModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title">Đăng nhập / Đăng ký</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="loginForm" class="mb-3">
+            <h6>Đăng nhập</h6>
+            <input type="email" id="loginEmail" class="form-control mb-2" placeholder="Email" required>
+            <input type="password" id="loginPassword" class="form-control mb-2" placeholder="Mật khẩu" required>
+            <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
+          </form>
+          <hr>
+          <form id="registerForm">
+            <h6>Đăng ký</h6>
+            <input type="text" id="registerName" class="form-control mb-2" placeholder="Tên" required>
+            <input type="email" id="registerEmail" class="form-control mb-2" placeholder="Email" required>
+            <input type="password" id="registerPassword" class="form-control mb-2" placeholder="Mật khẩu" required>
+            <button type="submit" class="btn btn-success w-100">Đăng ký</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN MODAL -->
+  <div class="modal fade" id="adminModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header bg-dark text-white">
+          <h5 class="modal-title"><i class="fas fa-tools me-2"></i>Quản lý sản phẩm (Admin)</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="adminModalBody"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CART -->
+  <div class="modal fade" id="cartModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header bg-white text-white">
+          <h5 class="modal-title"><i class="fas fa-shopping-cart me-2"></i>Giỏ hàng của bạn</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="cart-items" class="list-group mb-3"></div>
+          <h5 class="text-end">Tổng: <span id="cart-total">0 VNĐ</span></h5>
+        </div>
+        <div class="modal-footer d-flex justify-content-between align-items-center">
+          <div>
+            <select id="payment-method" class="form-select">
+              <option value="cash">💵 Thanh toán khi nhận hàng</option>
+              <option value="credit">💳 Thẻ tín dụng</option>
+              <option value="bank">🏦 Chuyển khoản ngân hàng</option>
+              <option value="momo">📱 Ví MoMo</option>
+            </select>
+          </div>
+          <div>
+            <button class="btn btn-success" onclick="checkout()"><i class="fas fa-credit-card me-1"></i> Thanh
+              toán</button>
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap + Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/theme.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => { AOS.init({ duration: 800 }); });
+  </script>
+</body>
+
+</html>

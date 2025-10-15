@@ -1,0 +1,87 @@
+if (!localStorage.getItem("products")) {
+  const sampleProducts = [
+    // Porsche (20 sản phẩm)
+    { id: "1", brand: "Porsche", name: "Porsche 911 Carrera", price: 8000000000, img: "img/porsche1.jpg", desc: "Porsche 911 Carrera là biểu tượng tốc độ và đẳng cấp." },
+    { id: "2", brand: "Porsche", name: "Porsche 911 Turbo S", price: 12000000000, img: "img/porsche1.jpg", desc: "Mẫu 911 mạnh mẽ nhất với động cơ Turbo kép." },
+    { id: "3", brand: "Porsche", name: "Porsche 911 GT3 RS", price: 14000000000, img: "img/porsche1.jpg", desc: "Xe thể thao đường đua với hiệu suất cực cao." },
+    { id: "4", brand: "Porsche", name: "Porsche Panamera", price: 9000000000, img: "img/porsche1.jpg", desc: "Sedan hạng sang, kết hợp thể thao và tiện nghi." },
+    { id: "5", brand: "Porsche", name: "Porsche Taycan", price: 7000000000, img: "img/porsche1.jpg", desc: "Siêu xe điện với thiết kế hiện đại và tốc độ ấn tượng." },
+    { id: "6", brand: "Porsche", name: "Porsche Cayenne", price: 6000000000, img: "img/porsche1.jpg", desc: "SUV hạng sang với khả năng vận hành mạnh mẽ." },
+    { id: "7", brand: "Porsche", name: "Porsche Macan", price: 4500000000, img: "img/porsche1.jpg", desc: "SUV nhỏ gọn nhưng đầy phong cách." },
+    { id: "8", brand: "Porsche", name: "Porsche 718 Cayman", price: 3800000000, img: "img/porsche1.jpg", desc: "Coupe thể thao nhỏ gọn, động cơ mid-engine." },
+    { id: "9", brand: "Porsche", name: "Porsche 718 Boxster", price: 4000000000, img: "img/porsche9.jpg", desc: "Roadster thể thao mui trần phong cách." },
+    { id: "10", brand: "Porsche", name: "Porsche 911 Carrera 4S", price: 9500000000, img: "img/porsche10.jpg", desc: "Phiên bản dẫn động 4 bánh mạnh mẽ của 911." },
+    { id: "11", brand: "Porsche", name: "Porsche 911 Targa", price: 10000000000, img: "img/porsche11.jpg", desc: "Phiên bản mui bán cứng độc đáo." },
+    { id: "12", brand: "Porsche", name: "Porsche 911 Speedster", price: 15000000000, img: "img/porsche12.jpg", desc: "Phiên bản giới hạn, thiết kế mui trần độc đáo." },
+    { id: "13", brand: "Porsche", name: "Porsche Taycan Turbo S", price: 9800000000, img: "img/porsche13.jpg", desc: "Siêu xe điện hiệu năng cao." },
+    { id: "14", brand: "Porsche", name: "Porsche Cayenne Coupe", price: 7000000000, img: "img/porsche14.jpg", desc: "SUV coupe phong cách." },
+    { id: "15", brand: "Porsche", name: "Porsche Macan GTS", price: 5000000000, img: "img/porsche15.jpg", desc: "SUV nhỏ gọn hiệu suất cao." },
+    { id: "16", brand: "Porsche", name: "Porsche 911 GT2 RS", price: 18000000000, img: "img/porsche16.jpg", desc: "911 mạnh mẽ nhất, dành cho đường đua." },
+    { id: "17", brand: "Porsche", name: "Porsche Panamera Turbo", price: 11000000000, img: "img/porsche17.jpg", desc: "Sedan sang trọng với động cơ mạnh mẽ." },
+    { id: "18", brand: "Porsche", name: "Porsche 911 Carrera GTS", price: 10000000000, img: "img/porsche18.jpg", desc: "Phiên bản thể thao đặc biệt của 911." },
+    { id: "19", brand: "Porsche", name: "Porsche 718 Spyder", price: 6000000000, img: "img/porsche19.jpg", desc: "Roadster thể thao đầy phấn khích." },
+    { id: "20", brand: "Porsche", name: "Porsche Taycan Cross Turismo", price: 8000000000, img: "img/porsche20.jpg", desc: "Phiên bản wagon đa dụng của Taycan." },
+
+    // Ferrari (5 sản phẩm)
+    { id: "21", brand: "Ferrari", name: "Ferrari 488 GTB", price: 12000000000, img: "img/porsche1.jpg", desc: "Siêu xe thể thao với động cơ V8 mạnh mẽ." },
+    { id: "22", brand: "Ferrari", name: "Ferrari F8 Tributo", price: 15000000000, img: "img/porsche1.jpg", desc: "Hậu duệ của 488 với hiệu suất vượt trội." },
+    { id: "23", brand: "Ferrari", name: "Ferrari SF90 Stradale", price: 20000000000, img: "img/porsche1.jpg", desc: "Siêu xe hybrid với công suất cực lớn." },
+    { id: "24", brand: "Ferrari", name: "Ferrari Roma", price: 10000000000, img: "img/porsche1.jpg", desc: "GT coupe thanh lịch nhưng vẫn mạnh mẽ." },
+    { id: "25", brand: "Ferrari", name: "Ferrari Portofino", price: 9000000000, img: "img/porsche1.jpg", desc: "Roadster mui trần sang trọng." },
+
+    // Lamborghini (5 sản phẩm)
+    { id: "26", brand: "Lamborghini", name: "Lamborghini Aventador", price: 20000000000, img: "img/porsche1.jpg", desc: "Siêu xe V12 đỉnh cao của Lamborghini." },
+    { id: "27", brand: "Lamborghini", name: "Lamborghini Huracan", price: 13000000000, img: "img/porsche1.jpg", desc: "Siêu xe V10 nổi tiếng với hiệu năng vượt trội." },
+    { id: "28", brand: "Lamborghini", name: "Lamborghini Urus", price: 8000000000, img: "img/porsche1.jpg", desc: "SUV thể thao mạnh mẽ và sang trọng." },
+    { id: "29", brand: "Lamborghini", name: "Lamborghini Sian", price: 30000000000, img: "img/porsche1.jpg", desc: "Siêu xe hybrid giới hạn cực hiếm." },
+    { id: "30", brand: "Lamborghini", name: "Lamborghini Revuelto", price: 40000000000, img: "img/porsche1.jpg", desc: "Mẫu siêu xe hybrid V12 mới nhất." },
+
+    // Mercedes (5 sản phẩm)
+    { id: "31", brand: "Mercedes", name: "Mercedes S-Class", price: 7000000000, img: "img/porsche1.jpg", desc: "Sedan hạng sang với công nghệ tiên tiến." },
+    { id: "32", brand: "Mercedes", name: "Mercedes E-Class", price: 3500000000, img: "img/porsche1.jpg", desc: "Mẫu sedan tầm trung hạng sang." },
+    { id: "33", brand: "Mercedes", name: "Mercedes G-Class", price: 12000000000, img: "img/porsche1.jpg", desc: "SUV địa hình sang trọng, biểu tượng của Mercedes." },
+    { id: "34", brand: "Mercedes", name: "Mercedes AMG GT", price: 11000000000, img: "img/mercedes4.jpg", desc: "Coupe thể thao hiệu suất cao." },
+    { id: "35", brand: "Mercedes", name: "Mercedes EQS", price: 9000000000, img: "img/mercedes5.jpg", desc: "Sedan điện sang trọng và hiện đại." },
+
+    // BMW (5 sản phẩm)
+    { id: "36", brand: "BMW", name: "BMW M4", price: 6000000000, img: "img/porsche1.jpg", desc: "Coupe thể thao hiệu suất cao." },
+    { id: "37", brand: "BMW", name: "BMW 7 Series", price: 8000000000, img: "img/porsche1.jpg", desc: "Sedan hạng sang cao cấp." },
+    { id: "38", brand: "BMW", name: "BMW X5", price: 4500000000, img: "img/porsche1.jpg", desc: "SUV đa dụng sang trọng." },
+    { id: "39", brand: "BMW", name: "BMW i8", price: 7500000000, img: "img/bmw4.jpg", desc: "Siêu xe hybrid với thiết kế tương lai." },
+    { id: "40", brand: "BMW", name: "BMW Z4", price: 3800000000, img: "img/bmw5.jpg", desc: "Roadster thể thao 2 chỗ ngồi." },
+
+    // Audi (5 sản phẩm)
+    { id: "41", brand: "Audi", name: "Audi R8", price: 11000000000, img: "img/porsche1.jpg", desc: "Siêu xe động cơ đặt giữa nổi tiếng của Audi." },
+    { id: "42", brand: "Audi", name: "Audi A8", price: 6000000000, img: "img/porsche1.jpg", desc: "Sedan hạng sang cao cấp." },
+    { id: "43", brand: "Audi", name: "Audi Q7", price: 3800000000, img: "img/audi3.jpg", desc: "SUV cỡ lớn sang trọng." },
+    { id: "44", brand: "Audi", name: "Audi TT", price: 2500000000, img: "img/porsche1.jpg", desc: "Coupe thể thao nhỏ gọn." },
+    { id: "45", brand: "Audi", name: "Audi e-tron GT", price: 7000000000, img: "img/audi5.jpg", desc: "Sedan điện thể thao hiện đại." },
+
+    // Rolls-Royce (5 sản phẩm)
+    { id: "46", brand: "Rolls-Royce", name: "Rolls-Royce Phantom", price: 35000000000, img: "img/porsche1.jpg", desc: "Biểu tượng của sự xa hoa và đẳng cấp." },
+    { id: "47", brand: "Rolls-Royce", name: "Rolls-Royce Ghost", price: 25000000000, img: "img/porsche1.jpg", desc: "Sedan sang trọng tinh tế." },
+    { id: "48", brand: "Rolls-Royce", name: "Rolls-Royce Cullinan", price: 32000000000, img: "img/porsche1.jpg", desc: "SUV siêu sang mạnh mẽ." },
+    { id: "49", brand: "Rolls-Royce", name: "Rolls-Royce Wraith", price: 28000000000, img: "img/rolls4.jpg", desc: "Coupe siêu sang với phong cách quý tộc." },
+    { id: "50", brand: "Rolls-Royce", name: "Rolls-Royce Dawn", price: 30000000000, img: "img/rolls5.jpg", desc: "Roadster sang trọng bậc nhất." },
+
+    // Bentley (5 sản phẩm)
+    { id: "51", brand: "Bentley", name: "Bentley Continental GT", price: 18000000000, img: "img/porsche1.jpg", desc: "Coupe siêu sang đậm chất Anh Quốc." },
+    { id: "52", brand: "Bentley", name: "Bentley Flying Spur", price: 15000000000, img: "img/porsche1.jpg", desc: "Sedan siêu sang đẳng cấp." },
+    { id: "53", brand: "Bentley", name: "Bentley Bentayga", price: 12000000000, img: "img/porsche1.jpg", desc: "SUV sang trọng mạnh mẽ." },
+    { id: "54", brand: "Bentley", name: "Bentley Mulsanne", price: 20000000000, img: "img/bentley4.jpg", desc: "Sedan siêu sang biểu tượng của Bentley." },
+    { id: "55", brand: "Bentley", name: "Bentley Azure", price: 22000000000, img: "img/bentley5.jpg", desc: "Xe mui trần siêu sang hiếm có." },
+
+    // Nissan (5 sản phẩm)
+    { id: "56", brand: "Nissan", name: "Nissan GT-R", price: 4000000000, img: "img/porsche1.jpg", desc: "Huyền thoại tốc độ đến từ Nhật Bản." },
+    { id: "57", brand: "Nissan", name: "Nissan 370Z", price: 2200000000, img: "img/porsche1.jpg", desc: "Coupe thể thao cỡ nhỏ nhưng mạnh mẽ." },
+    { id: "58", brand: "Nissan", name: "Nissan Ariya", price: 1800000000, img: "img/porsche1.jpg", desc: "SUV điện hiện đại của Nissan." },
+    { id: "59", brand: "Nissan", name: "Nissan Patrol", price: 3200000000, img: "img/nissan4.jpg", desc: "SUV địa hình cỡ lớn." },
+    { id: "60", brand: "Nissan", name: "Nissan Altima", price: 1500000000, img: "img/nissan5.jpg", desc: "Sedan cỡ trung sang trọng." },
+
+    // Maserati (5 sản phẩm)
+    { id: "61", brand: "Maserati", name: "Maserati Quattroporte", price: 6000000000, img: "img/porsche1.jpg", desc: "Sedan hạng sang của Ý." },
+    { id: "62", brand: "Maserati", name: "Maserati Ghibli", price: 4500000000, img: "img/porsche1.jpg", desc: "Sedan thể thao sang trọng." },
+    { id: "63", brand: "Maserati", name: "Maserati Levante", price: 5000000000, img: "img/porsche1.jpg", desc: "SUV thể thao phong cách Ý." },
+    { id: "64", brand: "Maserati", name: "Maserati MC20", price: 16000000000, img: "img/maserati4.jpg", desc: "Siêu xe mới nhất của Maserati." },
+    { id: "65", brand: "Maserati", name: "Maserati GranTurismo", price: 8000000000, img: "img/porsche1.jpg", desc: "Coupe sang trọng và mạnh mẽ." }
+  ];

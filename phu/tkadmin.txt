@@ -1,0 +1,5 @@
+Tên: Admin
+
+Email: admin@duccar.com
+
+Mật khẩu: admin123

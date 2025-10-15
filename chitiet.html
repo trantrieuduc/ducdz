@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chi tiết sản phẩm</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .product-img {
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .related-card img {
+      height: 150px;
+      object-fit: cover;
+    }
+
+    #thumbnailContainer img {
+      transition: 0.2s;
+    }
+
+    #thumbnailContainer img:hover {
+      transform: scale(1.05);
+      border: 2px solid #0d6efd;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
+        <img src="img/logo.png" alt="Logo" height="40" class="me-2">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <li class="nav-item"><a class="nav-link" href="index.html">Trang chủ</a></li>
+          <li class="nav-item"><a class="nav-link active" href="sanpham.html">Sản phẩm</a></li>
+          <li class="nav-item"><a class="nav-link" href="about.html">Về chúng tôi</a></li>
+          <li class="nav-item"><a class="nav-link" href="lienhe.html">Liên hệ</a></li>
+        </ul>
+        <form class="d-flex ms-lg-3 my-2 my-lg-0" onsubmit="searchProducts();return false;">
+          <input id="searchInput" class="form-control me-2" type="search" placeholder="Tìm xe...">
+          <button class="btn btn-outline-light" type="submit"><i class="fas fa-search"></i></button>
+        </form>
+        <button class="btn btn-outline-light ms-lg-3 my-2 my-lg-0 position-relative" onclick="openCart()">
+          <i class="fas fa-shopping-cart"></i>
+          <span id="cart-count"
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"></span>
+        </button>
+        <div id="auth-area" class="d-flex align-items-center ms-3">
+          <button id="btn-login" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#authModal">
+            <i class="fas fa-user"></i> Đăng nhập
+          </button>
+          <div id="userMenu" class="dropdown d-none">
+            <a class="btn btn-outline-light dropdown-toggle" href="#" id="userMenuBtn" data-bs-toggle="dropdown">
+              <i class="fas fa-user-circle"></i> <span id="userNameDisplay"></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenuBtn">
+              <li><a class="dropdown-item" href="#" id="accountProfile">Tài khoản</a></li>
+              <li><a class="dropdown-item d-flex justify-content-between align-items-center" href="#"
+                  id="orderHistoryBtn" onclick="renderOrderHistory()">Lịch sử đơn hàng <span id="order-count"
+                    class="badge bg-secondary">0</span></a></li>
+              <li id="adminMenu" class="d-none"><a class="dropdown-item" href="#" id="openAdmin">Tính năng admin</a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li><a class="dropdown-item text-danger" href="#" id="btn-logout">Đăng xuất</a></li>
+            </ul>
+          </div>
+        </div>
+        <button class="btn btn-outline-light ms-3 my-2 my-lg-0" id="dark-toggle">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Chi tiết sản phẩm -->
+  <main class="container my-5">
+    <div id="productDetail" class="row g-4">
+      <!-- JS sẽ render ở đây -->
+    </div>
+
+    <h4 class="mt-5">Sản phẩm liên quan</h4>
+    <div id="relatedProducts" class="row g-3 mt-2">
+      <!-- Sản phẩm liên quan -->
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-dark text-light py-4 mt-auto">
+    <div class="container text-center">
+      <p>&copy; 2025 DucCar. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Modals -->
+  <div class="modal fade" id="cartModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title">Giỏ hàng</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="cart-items" class="list-group mb-3"></div>
+          <div class="d-flex justify-content-between">
+            <strong>Tổng:</strong>
+            <span id="cart-total">0 VNĐ</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <select id="payment-method" class="form-select w-auto me-auto">
+            <option>Tiền mặt</option>
+            <option>Chuyển khoản</option>
+          </select>
+          <button class="btn btn-success" onclick="checkout()">Thanh toán</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS + Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Script chính -->
+  <script src="js/script.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      updateUserUI();
+      updateCartCount();
+
+      const params = new URLSearchParams(window.location.search);
+      const productId = params.get("id");
+      const products = getAllProducts();
+      let product = products.find(p => p.id === productId);
+
+      const detailContainer = document.getElementById("productDetail");
+      const defaultImg = "img/Porsche911.jpg"; // ảnh mặc định
+
+      if (!product) {
+        detailContainer.innerHTML = "<p class='text-center text-danger'>Sản phẩm không tồn tại!</p>";
+        return;
+      }
+
+      // luôn có mảng ảnh để render
+      // giả lập nhiều ảnh cho sản phẩm
+      const images = (product.images && product.images.length) ? product.images : [
+        "img/porsche1_back.jpg",
+        "img/porsche_side.jpg",
+        "img/audi_r8.jpg",
+        "img/porsche1_back.jpg",
+        "img/BMW_M4.jpg"
+      ];
+
+
+      detailContainer.innerHTML = `
+        <div class="col-md-6 text-center">
+          <img id="mainProductImg" src="${images[0]}" alt="${product.name}" class="product-img rounded shadow-sm mb-3">
+          <div id="thumbnailContainer" class="d-flex justify-content-center gap-2 flex-wrap">
+            ${images.map(img => `
+              <img src="${img}" class="img-thumbnail" style="width:70px; height:70px; cursor:pointer;" alt="${product.name}">
+            `).join('')}
+          </div>
+        </div>
+        <div class="col-md-6">
+          <h2>${product.name}</h2>
+          <p class="text-muted">Hãng: ${product.brand}</p>
+          <p class="fw-bold text-primary">${product.price.toLocaleString()} VNĐ</p>
+          <p>${product.desc}</p>
+          <div class="d-flex gap-2 mt-3">
+            <button class="btn btn-success btn-cart"><i class="fas fa-cart-plus"></i> Thêm vào giỏ</button>
+            <button class="btn btn-outline-danger btn-fav">${getFavorites().includes(product.id) ? '❤️ Đã thích' : '🤍 Yêu thích'}</button>
+          </div>
+        </div>
+      `;
+
+      // thumbnail click
+      const mainImg = document.getElementById("mainProductImg");
+      document.querySelectorAll("#thumbnailContainer img").forEach(thumb => {
+        thumb.addEventListener("click", () => {
+          mainImg.src = thumb.src;
+        });
+      });
+
+      // thêm vào giỏ & yêu thích
+      detailContainer.querySelector(".btn-cart").addEventListener("click", () => addToCart(product.id));
+      detailContainer.querySelector(".btn-fav").addEventListener("click", () => {
+        toggleFavorite(product.id);
+        detailContainer.querySelector(".btn-fav").textContent = getFavorites().includes(product.id) ? '❤️ Đã thích' : '🤍 Yêu thích';
+      });
+
+      // sản phẩm liên quan
+      const relatedContainer = document.getElementById("relatedProducts");
+      const related = products.filter(p => p.brand === product.brand && p.id !== product.id).slice(0, 4);
+      relatedContainer.innerHTML = related.map(p => `
+        <div class="col-lg-3 col-md-4 col-6">
+          <div class="card related-card h-100 shadow-sm">
+            <img src="${p.img || defaultImg}" class="card-img-top" alt="${p.name}">
+            <div class="card-body text-center">
+              <h6 class="card-title">${p.name}</h6>
+              <p class="text-primary fw-bold">${p.price.toLocaleString()} VNĐ</p>
+              <a href="detail.html?id=${p.id}" class="btn btn-sm btn-outline-primary">Xem</a>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    });
+  </script>
+</body>
+
+</html>

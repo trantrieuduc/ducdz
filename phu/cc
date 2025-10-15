@@ -1,0 +1,467 @@
+// ===================== INIT DATA =====================
+let users = [
+    { email: "admin@gmail.com", name: "admin", password: "admin123", role: "admin" }
+];
+
+if (!localStorage.getItem("users")) localStorage.setItem("users", JSON.stringify(users));
+else users = JSON.parse(localStorage.getItem("users"));
+
+if (!localStorage.getItem("products")) {
+    const sampleProducts = [
+        { id: "1", name: "Ferrari SF90", brand: "Ferrari", price: 300000000, img: "img/ferrari.jpg" },
+        { id: "2", name: "Lamborghini Aventador", brand: "Lamborghini", price: 350000000, img: "img/lambo.jpg" },
+        { id: "3", name: "Porsche 911", brand: "Porsche", price: 250000000, img: "img/porsche.jpg" }
+    ];
+    localStorage.setItem("products", JSON.stringify(sampleProducts));
+}
+
+if (!localStorage.getItem("orders")) localStorage.setItem("orders", JSON.stringify([]));
+if (!localStorage.getItem("cart")) localStorage.setItem("cart", JSON.stringify([]));
+
+// ===================== USER FUNC =====================
+function login(email, password) {
+    const user = users.find(u => u.email === email && u.password === password);
+    if (user) {
+        localStorage.setItem("currentUser", JSON.stringify(user));
+        updateUserUI();
+        alert("Đăng nhập thành công!");
+        return true;
+    }
+    return false;
+}
+
+function register(name, email, password) {
+    if (users.find(u => u.email === email)) { alert("Email đã được đăng ký!"); return false; }
+    const newUser = { name, email, password, role: "user" };
+    users.push(newUser);
+    localStorage.setItem("users", JSON.stringify(users));
+    alert("Đăng ký thành công! Bạn đã được đăng nhập tự động.");
+    login(email, password); // auto login
+    return true;
+}
+
+function logout() {
+    localStorage.removeItem("currentUser");
+    updateUserUI();
+}
+
+function isAdmin() {
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    return user && user.role === "admin";
+}
+
+function updateUserUI() {
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    const btnLogin = document.getElementById("btn-login");
+    const userMenu = document.getElementById("userMenu");
+    const userNameDisplay = document.getElementById("userNameDisplay");
+    const adminMenu = document.getElementById("adminMenu");
+
+    if (user) {
+        btnLogin.classList.add("d-none");
+        userMenu.classList.remove("d-none");
+        userNameDisplay.innerText = user.name;
+
+        if (user.role === "admin") adminMenu.classList.remove("d-none");
+        else adminMenu.classList.add("d-none");
+    } else {
+        btnLogin.classList.remove("d-none");
+        userMenu.classList.add("d-none");
+        adminMenu.classList.add("d-none");
+    }
+}
+
+// ===================== PRODUCT FUNC =====================
+function getAllProducts() {
+    return JSON.parse(localStorage.getItem("products")) || [];
+}
+
+function addProduct(product) {
+    product.id = Date.now().toString();
+    const products = getAllProducts();
+    products.push(product);
+    localStorage.setItem("products", JSON.stringify(products));
+}
+
+function editProduct(id, updated) {
+    const products = getAllProducts();
+    const index = products.findIndex(p => p.id === id);
+    if (index !== -1) {
+        products[index] = { ...products[index], ...updated };
+        localStorage.setItem("products", JSON.stringify(products));
+    }
+}
+
+function deleteProduct(id) {
+    const products = getAllProducts().filter(p => p.id !== id);
+    localStorage.setItem("products", JSON.stringify(products));
+}
+
+// ===================== CART FUNC =====================
+function getCart() {
+    return JSON.parse(localStorage.getItem("cart")) || [];
+}
+
+function addToCart(productId) {
+    const cart = getCart();
+    const product = getAllProducts().find(p => p.id === productId);
+    if (!product) return;
+    const item = cart.find(i => i.id === productId);
+    if (item) item.quantity++;
+    else cart.push({ id: productId, quantity: 1 });
+    localStorage.setItem("cart", JSON.stringify(cart));
+    renderCart();
+}
+
+function removeFromCart(productId) {
+    let cart = getCart();
+    cart = cart.filter(i => i.id !== productId);
+    localStorage.setItem("cart", JSON.stringify(cart));
+    renderCart();
+}
+
+function renderCart() {
+    const cartItems = document.getElementById("cart-items");
+    const cartCount = document.getElementById("cart-count");
+    const cartTotal = document.getElementById("cart-total");
+    const cart = getCart();
+
+    cartItems.innerHTML = "";
+    let total = 0;
+
+    if (cart.length === 0) {
+        cartItems.innerHTML = "<p>Giỏ hàng trống!</p>";
+    }
+
+    cart.forEach(item => {
+        const product = getAllProducts().find(p => p.id === item.id);
+        if (!product) return;
+        total += product.price * item.quantity;
+        const div = document.createElement("div");
+        div.className = "list-group-item d-flex justify-content-between align-items-center";
+        div.innerHTML = `
+      <div>
+        <b>${product.name}</b> x ${item.quantity} <br>
+        ${product.price.toLocaleString()} VNĐ
+      </div>
+      <button class="btn btn-sm btn-danger">Xóa</button>
+    `;
+        div.querySelector("button").addEventListener("click", () => removeFromCart(item.id));
+        cartItems.appendChild(div);
+    });
+
+    cartCount.innerText = cart.length;
+    cartTotal.innerText = total.toLocaleString() + " VNĐ";
+}
+
+function checkout() {
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    if (!user) { alert("Vui lòng đăng nhập để thanh toán!"); return; }
+
+    const cart = getCart();
+    if (!cart.length) { alert("Giỏ hàng trống!"); return; }
+
+    const paymentMethod = document.getElementById("payment-method").value;
+    const order = {
+        id: Date.now().toString(),
+        user: user.email,
+        items: cart,
+        total: cart.reduce((sum, i) => {
+            const p = getAllProducts().find(x => x.id === i.id);
+            return sum + (p ? p.price * i.quantity : 0);
+        }, 0),
+        paymentMethod,
+        date: new Date().toLocaleString()
+    };
+    const orders = JSON.parse(localStorage.getItem("orders"));
+    orders.push(order);
+    localStorage.setItem("orders", JSON.stringify(orders));
+
+    localStorage.setItem("cart", JSON.stringify([]));
+    renderCart();
+    alert("Thanh toán thành công!");
+    bootstrap.Modal.getInstance(document.getElementById("cartModal")).hide();
+}
+
+function renderOrders() {
+    const ordersList = document.getElementById("ordersList");
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+    const allOrders = JSON.parse(localStorage.getItem("orders")) || [];
+    ordersList.innerHTML = "";
+
+    if (!user) {
+        ordersList.innerHTML = "<p>Vui lòng đăng nhập để xem lịch sử đơn hàng!</p>";
+        return;
+    }
+
+    const userOrders = allOrders.filter(o => o.user === user.email);
+    if (!userOrders.length) {
+        ordersList.innerHTML = "<p>Chưa có đơn hàng nào!</p>";
+        return;
+    }
+
+    userOrders.forEach(order => {
+        const div = document.createElement("div");
+        div.className = "border p-2 mb-2";
+        div.innerHTML = `
+      <b>Đơn hàng #${order.id}</b> - ${order.date} - <i>${order.paymentMethod}</i>
+      <ul>
+        ${order.items.map(i => {
+            const p = getAllProducts().find(x => x.id === i.id);
+            return `<li>${p ? p.name : "Sản phẩm đã xóa"} x ${i.quantity}</li>`;
+        }).join("")}
+      </ul>
+      <b>Tổng: </b>${order.total.toLocaleString()} VNĐ
+    `;
+        ordersList.appendChild(div);
+    });
+}
+
+// ===================== SEARCH & RENDER PRODUCTS =====================
+document.addEventListener("DOMContentLoaded", () => {
+    const productList = document.getElementById("product-list");
+    const searchInput = document.getElementById("searchInput");
+
+    function renderProducts(arr) {
+        if (!productList) return;
+        productList.innerHTML = "";
+        if (!arr.length) { productList.innerHTML = "<p class='text-center'>Chưa có sản phẩm!</p>"; return; }
+
+        arr.forEach(p => {
+            const col = document.createElement("div");
+            col.className = "col-lg-4 col-md-6 col-12";
+            col.innerHTML = `
+        <div class="card h-100 shadow-sm product-card">
+          <img src="${p.img}" class="card-img-top" alt="${p.name}">
+          <div class="card-body d-flex flex-column text-center">
+            <h5 class="card-title">${p.name}</h5>
+            <p class="card-text">Hãng: ${p.brand}</p>
+            <p class="card-text fw-bold text-primary">${p.price.toLocaleString()} VNĐ</p>
+            <a href="chitiet.html?id=${p.id}" class="btn btn-outline-primary mt-auto">Xem chi tiết</a>
+          </div>
+        </div>
+      `;
+            productList.appendChild(col);
+        });
+    }
+
+    function createFilter(products) {
+        if (!productList) return;
+        const filterContainer = document.createElement("div");
+        filterContainer.className = "mb-4 text-center";
+        filterContainer.innerHTML = `<button class="btn btn-outline-primary me-2 mb-2 active" data-brand="all">Tất cả</button>`;
+        [...new Set(products.map(p => p.brand))].forEach(b => {
+            const btn = document.createElement("button");
+            btn.className = "btn btn-outline-primary me-2 mb-2";
+            btn.textContent = b;
+            btn.dataset.brand = b;
+            filterContainer.appendChild(btn);
+        });
+        productList.parentElement.prepend(filterContainer);
+
+        filterContainer.addEventListener("click", e => {
+            if (e.target.tagName !== "BUTTON") return;
+            const brand = e.target.dataset.brand;
+            filterContainer.querySelectorAll("button").forEach(btn => btn.classList.remove("active"));
+            e.target.classList.add("active");
+            const allProducts = getAllProducts();
+            renderProducts(brand === "all" ? allProducts : allProducts.filter(p => p.brand === brand));
+        });
+    }
+
+    const allProducts = getAllProducts();
+    createFilter(allProducts);
+    renderProducts(allProducts);
+
+    // ===== SEARCH =====
+    if (searchInput) {
+        searchInput.addEventListener("input", e => {
+            const term = e.target.value.toLowerCase();
+            renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(term) || p.brand.toLowerCase().includes(term)));
+        });
+    }
+
+    // ===== CART & ORDERS =====
+    renderCart();
+    renderOrders();
+
+    // Gắn event cho modal orders
+    const orderHistoryBtn = document.getElementById("orderHistoryBtn");
+    if (orderHistoryBtn) orderHistoryBtn.addEventListener("click", renderOrders);
+});
+
+// ===== AUTH =====
+document.getElementById("btn-logout")?.addEventListener("click", logout);
+
+document.getElementById("loginForm")?.addEventListener("submit", e => {
+    e.preventDefault();
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+    login(email, password);
+});
+
+document.getElementById("registerForm")?.addEventListener("submit", e => {
+    e.preventDefault();
+    const name = document.getElementById("registerName").value;
+    const email = document.getElementById("registerEmail").value;
+    const password = document.getElementById("registerPassword").value;
+    register(name, email, password);
+});
+
+// ===== ADMIN PANEL =====
+document.addEventListener("DOMContentLoaded", () => {
+    if (!isAdmin()) return;
+    const adminBtn = document.getElementById("openAdmin");
+    if (!adminBtn) return;
+    adminBtn.addEventListener("click", () => {
+        // ===== ADMIN PANEL =====
+        if (isAdmin()) {
+            const adminBtn = document.getElementById("openAdmin");
+            if (adminBtn) {
+                adminBtn.addEventListener("click", () => {
+                    const modalHTML = `
+          <div class="modal fade" id="adminPanelModal" tabindex="-1">
+            <div class="modal-dialog modal-xl">
+              <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                  <h5 class="modal-title">Admin Panel</h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <h6>Quản lý sản phẩm</h6>
+                  <form id="productForm" class="mb-3">
+                    <input type="hidden" id="productId">
+                    <div class="row g-2">
+                      <div class="col"><input type="text" id="productName" class="form-control" placeholder="Tên sản phẩm" required></div>
+                      <div class="col"><input type="text" id="productBrand" class="form-control" placeholder="Thương hiệu" required></div>
+                      <div class="col"><input type="number" id="productPrice" class="form-control" placeholder="Giá VNĐ" required></div>
+                      <div class="col">
+                        <input type="file" id="productImg" class="form-control" accept="image/*">
+                        <img id="previewImg" src="" alt="Preview" style="width:80px;margin-top:5px;display:none;">
+                      </div>
+                      <div class="col-auto"><button type="submit" class="btn btn-primary">Lưu</button></div>
+                      <div class="col-auto"><button type="button" id="resetFormBtn" class="btn btn-secondary">Reset</button></div>
+                    </div>
+                  </form>
+                  <table class="table table-bordered">
+                    <thead class="table-dark">
+                      <tr><th>ID</th><th>Ảnh</th><th>Tên</th><th>Thương hiệu</th><th>Giá</th><th>Hành động</th></tr>
+                    </thead>
+                    <tbody id="productTableBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+                    document.body.insertAdjacentHTML("beforeend", modalHTML);
+                    const adminModal = new bootstrap.Modal(document.getElementById("adminPanelModal"));
+                    adminModal.show();
+
+                    const productForm = document.getElementById("productForm");
+                    const productTableBody = document.getElementById("productTableBody");
+                    const resetBtn = document.getElementById("resetFormBtn");
+                    const fileInput = document.getElementById("productImg");
+                    const previewImg = document.getElementById("previewImg");
+
+                    // --- Preview ảnh ---
+                    fileInput.addEventListener("change", () => {
+                        const file = fileInput.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = e => {
+                                previewImg.src = e.target.result;
+                                previewImg.style.display = "inline-block";
+                            };
+                            reader.readAsDataURL(file);
+                        } else previewImg.style.display = "none";
+                    });
+
+                    // --- Render admin products ---
+                    function renderAdminProducts() {
+                        const products = getAllProducts();
+                        productTableBody.innerHTML = "";
+                        products.forEach(p => {
+                            const tr = document.createElement("tr");
+                            tr.innerHTML = `
+              <td>${p.id}</td>
+              <td><img src="${p.img}" width="80"></td>
+              <td>${p.name}</td>
+              <td>${p.brand}</td>
+              <td>${p.price.toLocaleString()} VNĐ</td>
+              <td>
+                <button class="btn btn-sm btn-primary me-1" onclick="editProductForm('${p.id}')">Sửa</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteProductConfirm('${p.id}')">Xóa</button>
+              </td>
+            `;
+                            productTableBody.appendChild(tr);
+                        });
+                    }
+
+                    window.editProductForm = id => {
+                        const product = getAllProducts().find(p => p.id === id);
+                        if (!product) return;
+                        document.getElementById("productId").value = product.id;
+                        document.getElementById("productName").value = product.name;
+                        document.getElementById("productBrand").value = product.brand;
+                        document.getElementById("productPrice").value = product.price;
+                        previewImg.src = product.img;
+                        previewImg.style.display = "inline-block";
+                        fileInput.setAttribute("data-existing", product.img);
+                    };
+
+                    window.deleteProductConfirm = id => {
+                        if (confirm("Bạn có chắc muốn xóa sản phẩm này?")) {
+                            deleteProduct(id);
+                            renderAdminProducts();
+                        }
+                    };
+
+                    productForm.addEventListener("submit", e => {
+                        e.preventDefault();
+                        const id = document.getElementById("productId").value;
+                        const name = document.getElementById("productName").value;
+                        const brand = document.getElementById("productBrand").value;
+                        const price = parseInt(document.getElementById("productPrice").value);
+                        const file = fileInput.files[0];
+
+                        const processProduct = (img) => {
+                            if (id) editProduct(id, { name, brand, price, img });
+                            else addProduct({ name, brand, price, img });
+                            renderAdminProducts();
+                            renderProducts(getAllProducts()); // update main product list
+                            productForm.reset();
+                            document.getElementById("productId").value = "";
+                            previewImg.style.display = "none";
+                            fileInput.removeAttribute("data-existing");
+                        };
+
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = e => processProduct(e.target.result);
+                            reader.readAsDataURL(file);
+                        } else {
+                            const existingImg = fileInput.getAttribute("data-existing");
+                            if (id && existingImg) processProduct(existingImg);
+                            else alert("Vui lòng chọn ảnh sản phẩm!");
+                        }
+                    });
+
+                    resetBtn.addEventListener("click", () => {
+                        productForm.reset();
+                        document.getElementById("productId").value = "";
+                        previewImg.style.display = "none";
+                        fileInput.removeAttribute("data-existing");
+                    });
+
+                    renderAdminProducts();
+                });
+            }
+        }
+    });
+});
+
+// ===================== INIT UI =====================
+updateUserUI();
+renderCart();
+renderOrders();
